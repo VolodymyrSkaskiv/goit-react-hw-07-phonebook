@@ -1,7 +1,7 @@
 import styled, { keyframes } from 'styled-components';
 
 export const List = styled.ul`
-  padding-left: 30px;
+  padding-left: 5px;
 `;
 
 export const Item = styled.li`
