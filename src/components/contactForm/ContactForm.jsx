@@ -1,40 +1,39 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { addContact } from 'redux/contactsSlice';
-import { getContacts } from 'redux/selectors';
+import { addContact } from 'redux/operations';
+import { selectContacts } from 'redux/selectors';
 import { nanoid } from 'nanoid';
-import { toast } from 'react-toastify'; // це бібліотека для виведення повідомлень
+import { toast } from 'react-toastify';
 import { Form, Input, Label, SubmitButton } from './ContactForm.styled';
 
 export const ContactForm = () => {
-  const dispatch = useDispatch(); // функція, яка дозволяє відправити екшн
-  const contacts = useSelector(getContacts); // отримуємо всі контакти зі стейта
+  const dispatch = useDispatch();
+  const contacts = useSelector(selectContacts);
 
   const handleSubmit = event => {
     event.preventDefault();
 
-    // створюємо об'єкт контакту
     const contact = {
       id: nanoid(),
       name: event.currentTarget.elements.name.value,
       number: event.currentTarget.elements.number.value,
     };
 
-    // перевіряємо чи такий контакт вже є в списку
     const isExist = contacts.find(
       ({ name }) => name.toLowerCase() === contact.name.toLowerCase()
     );
 
-    // якщо такий контакт вже є, то виводимо повідомлення
     if (isExist) {
       return toast.warn(`${contact.name} is already in contacts.`);
     }
 
-    dispatch(addContact(contact)); // відправляємо екшн з контактом в стейт
+    dispatch(addContact(contact));
     event.currentTarget.reset();
   };
 
   return (
     <Form onSubmit={handleSubmit}>
+      {' '}
+      {/* відправляємо дані з форми */}
       <Label htmlFor={nanoid()}>
         Name
         <Input
@@ -57,7 +56,6 @@ export const ContactForm = () => {
           required
         />
       </Label>
-
       <SubmitButton type="submit">Add contact</SubmitButton>
     </Form>
   );

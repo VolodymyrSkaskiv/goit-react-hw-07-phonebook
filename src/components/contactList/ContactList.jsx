@@ -1,39 +1,53 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { getContacts, getFilter } from 'redux/selectors';
-import { deleteContact } from 'redux/contactsSlice';
-import { Button, Item, List, Text } from './ContactList.styled'; // стилі компонента
+import { useEffect } from 'react';
+import { RiContactsLine } from 'react-icons/ri';
+
+import {
+  selectError,
+  selectFilteredContacts,
+  selectIsLoading,
+} from 'redux/selectors';
+import { fetchContacts, deleteContact } from 'redux/operations';
+import { Button, Item, List, Text, Spinner } from './ContactList.styled';
 
 export const ContactList = () => {
-  const contacts = useSelector(getContacts); // функція, яка дозволяє витягнути дані зі стейта
-  const filter = useSelector(getFilter);
-  const dispatch = useDispatch(); // функція, яка дозволяє відправити екшн
+  const filteredContacts = useSelector(selectFilteredContacts);
+  const isLoading = useSelector(selectIsLoading);
+  const error = useSelector(selectError);
+  const dispatch = useDispatch();
 
-  // фільтруємо контакти по значенню фільтра
-  const filteredContacts = contacts?.filter(contact =>
-    contact?.name?.toLowerCase().includes(filter.toLowerCase())
-  );
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
   const onDeleteContact = id => {
-    dispatch(deleteContact(id)); // відправляємо екшн
+    dispatch(deleteContact(id));
   };
 
-  if (!filteredContacts?.length) {
-    return <Text>No contacts found.</Text>;
-  }
-
   return (
-    <List>
-      {/* мапимо контакти і виводимо їх на екран */}
-      {filteredContacts.map(({ id, name, number }) => (
-        <Item key={id}>
-          <Text>
-            {name}: {number}
-          </Text>
-          <Button type="button" onClick={() => onDeleteContact(id)}>
-            Delete
-          </Button>
-        </Item>
-      ))}
-    </List>
+    <>
+      {isLoading && <Spinner />}
+
+      {/* якщо немає контактів і не йде загрузка і не виникла помилка */}
+      {!filteredContacts?.length && !error && !isLoading && (
+        <Text>No contacts found.</Text>
+      )}
+
+      {/* якщо виникла помилка */}
+      {error && <Text>{error}</Text>}
+      <List>
+        {filteredContacts.map(({ id, name, phone }) => (
+          <Item key={id}>
+            <RiContactsLine size={20} />
+            <Text>
+              {name}: {phone}
+            </Text>
+            <Button type="button" onClick={() => onDeleteContact(id)}>
+              Delete
+            </Button>
+          </Item>
+        ))}
+      </List>
+    </>
   );
 };
