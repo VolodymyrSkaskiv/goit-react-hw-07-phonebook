@@ -36,11 +36,11 @@ export const ContactList = () => {
       {/* якщо виникла помилка */}
       {error && <Text>{error}</Text>}
       <List>
-        {filteredContacts.map(({ id, name, phone }) => (
+        {filteredContacts.map(({ id, name, number }) => (
           <Item key={id}>
             <RiContactsLine size={20} />
             <Text>
-              {name}: {phone}
+              {name}: {number}
             </Text>
             <Button type="button" onClick={() => onDeleteContact(id)}>
               Delete
